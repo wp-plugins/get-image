@@ -23,18 +23,6 @@ make the impression of this string.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
 1. Upload `getimage.php` to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Place `<?php gi_fullsize ('plugin_name_hook'); ?>` in your templates
-
-== Frequently Asked Questions ==
-
-.
-
-== Screenshots ==
-
-.
