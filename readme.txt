@@ -2,13 +2,16 @@
 Contributors: dgmike
 Donate link: http://dgmike.wordpress.com
 Tags: image, thumbnail, fullzise
-Requires at least: 2.5
-Tested up to: 2.5
-Stable tag: 0.5
+Requires at least: 2.6
+Tested up to: 2.6
+Stable tag: 0.8
 
 Take the last image daughter of a post on the selected size.
 
 == Description ==
+
+Note: This version only works on Wordpress 2.6. If you wants to use on wordpress 2.5, please get
+the version 0.5 on download repository.
 
 Take the last image daughter of a post. To use this plugin you just need to insert one of
 the following commands in your template:
@@ -27,6 +30,14 @@ Now you have a `gi_library ()` function. It returns all images from yout post - 
 last daughter, where you can pass some parameters like size and type of return you wants.
 
 The sizes of `gi_library ()` are: 'all', 'fullsize', 'medium', 'thumbnail'
+
+= Upgraded in version 0.8 =
+
+# Added shortcuts for `gi_thumb ()` and `gi_full()`.
+# Upgraded for wordpress 2.6
+# Added width and height in `gi_library`.
+# Using the native `wp_get_attachment_image ()` function.
+
 
 == Installation ==
 

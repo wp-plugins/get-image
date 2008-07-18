@@ -2,7 +2,7 @@
 /*
     Plugin Name: getImage
     Description: Pega a última imagem filha de um post. Para usar este plugin basta você inserir um dos seguintes comandos no seu template: <strong>gi_fullsize(); gi_medium(); gi_thumbnail();</strong> Adicionando um parâmetro, ele vai parar dentro da tag de imagem gerada. Por padrão, o plugin retornará uma string contendo a tag da imagem gerada, mas você pode passar o segundo parametro como true para pedir que ele faça a impressão desta string."
-    Version: 0.5
+    Version: 0.8
     Author: DGmike
     Author URI: http://dgmike.wordpress.com
  */
@@ -16,27 +16,105 @@
 function gi_file ($all = false){
   global $post;
   $images = array ();
-  if ($itens = get_children($post->ID))
-    foreach ($itens as $item)
-      # Versão antiga de como pegar um arquivo de imagem (pela extensão)
-      # A função anterior usava expressões regulares, o que diminui o
-      # desempenho do PHP.
-      #
-      # preg_match ('/\.(jpg|jpeg|png|gif|bmp)$/', $item->guid)
-      #
-      # Nova versão: pelo mime
-      if (false !== strpos($item->post_mime_type, 'image'))
-        $images[] = $item;
+
+  if ($itens = get_posts(array('post_type' => 'attachment', 'post_parent' => $post->ID)) ) {
+    foreach ($itens as $item) {
+      apply_filters('the_title', $attachment->post_title);
+      $images[] = $item;
+    }
+  }
   return $all ? $images : reset($images);
+}
+
+/**
+ * Pega as urls geradas de uma imagem
+ *
+ * @param object $image Imagem gerada pelo gi_file()
+ * @param string $size  Tamanho de output que você desejaria receber. Os tamanhos disponivéis são: full, medium, thumbnail e all para receber os três tamanhos em um array
+ * @param bool $full Retornar todas as informações? Se true, retornará um array com url, largura e altura
+ * @return array|string
+ */
+function gi_url($image, $size, $full = false) {
+  $sizes = array ('all', 'fullsize', 'medium', 'thumbnail');
+  if (!$image) $image = gi_file();
+  if (!$image || array_key_exists($size, $sizes) ) return;
+  $sizes = array ('fullsize', 'medium', 'thumbnail');
+  $urls = array ();
+  foreach ($sizes as $s) {
+    if ($full) {
+      $urls[$s] = wp_get_attachment_image_src($image->ID, $s);
+    } else {
+      list ($url, $width, $height) = wp_get_attachment_image_src($image->ID, $s);
+      $urls[$s] = $url;
+    }
+  }
+  if ($size == 'all') return $urls;
+  return $urls[$size];
+}
+
+/**
+ * GImage retorna a tag da imagem no tamanho desejado
+ *
+ * @param string $size Tamhno que você deseja retornar
+ * @return string
+ */
+function gImage ($size) {
+  $image = gi_file ();
+  return wp_get_attachment_image($image->ID, $size);
+}
+/**
+ * Retorna a imagem em Fullsize
+ *
+ * @param bool $print Gostaria de imprimir a tag img?
+ */
+function gi_fullsize($print = false) {
+  $return = gImage('fullsize');
+  if ($print) print $return;
+  else return $return;
+}
+/**
+ * Atalho para fullsize
+ *
+ * @param bool $print Gostaria de imprimir a tag img?
+ */
+function gi_full ($print = false) {
+  return gi_fullsize($print);
+}
+/**
+ * Retorna a imagem em tamanho Medium
+ *
+ * @param bool $print Gostaria de imprimir a tag img?
+ */
+function gi_medium($print = false) {
+  $return = gImage('medium');
+  if ($print) print $return;
+  else return $return;
+}
+/**
+ * Retorna a imagem em Thumbnail
+ *
+ * @param bool $print Gostaria de imprimir a tag img?
+ */
+function gi_thumbnail($print = false) {
+  $return = gImage('thumbnail');
+  if ($print) print $return;
+  else return $return;
+}
+/**
+ * Atalho para thumbnail
+ *
+ * @param bool $print Gostaria de imprimir a tag img?
+ */
+function gi_thumb ($print = false) {
+  return gi_thumbnail($print);
 }
 
 /**
  * Get a library of images from a post
  *
- * @param string $size Choose: all, fullsize, medium, thumbnail
- * @param string $extra Extra for your img tag
- * @param bool $print Do you want to print (only used if yout $return_as are 'string')
- * @param string $return_as Choose: array, brute_array, string
+ * @param string $size Escolha um tamanho que voce gostaria que retornasse: all, fullsize, medium, thumbnail
+ * @param bool $print Você gostaria de imprimir o resultado? (somente valido se o $return_as for 'string')
+ * @param string $return_as Escolha: array, brute_array, string
  * @return string|array
  */
 
@@ -44,7 +122,7 @@ function gi_library ($size = 'thumbnail', $extra = '', $print = false, $return_a
   $images = gi_file(true);
   $imgs = array();
   foreach ($images as $image)
-  	$imgs[] = gi_image($image, 'all');
+  	$imgs[] = gi_url($image, 'all', true);
   $images = array();
   foreach ($imgs as $img) {
     if ($size == 'all') $images[] = $img;
@@ -53,11 +131,12 @@ function gi_library ($size = 'thumbnail', $extra = '', $print = false, $return_a
   if ($return_as == 'brute_array') return $images;
   $imgs = array();
   foreach ($images as $image) {
-  	if (in_array($size, array('fullsize', 'medium', 'thumbnail'))) $imgs[] = sprintf('<img src="%s" title="%s" %s  />', $image[$size], $image['title'], $extra);
+  	if (in_array($size, array('fullsize', 'medium', 'thumbnail')))
+      $imgs[] = sprintf('<img src="%s" width="%s" height="%s" title="%s" %s  />', $image[$size][0], $image[$size][1], $image[$size][2], $image['title'], $extra);
   	if ($size == 'all') {
-  	  $imgs[] = sprintf('<img src="%s" title="%s" %s  />', $image['fullsize'], $image['title'], $extra);
-  	  $imgs[] = sprintf('<img src="%s" title="%s" %s  />', $image['medium'], $image['title'], $extra);
-  	  $imgs[] = sprintf('<img src="%s" title="%s" %s  />', $image['thumbnail'], $image['title'], $extra);
+      $imgs[] = sprintf('<img src="%s" width="%s" height="%s" title="%s" %s  />', $image['fullsize'][0], $image['fullsize'][1], $image['fullsize'][2], $image['title'], $extra);
+      $imgs[] = sprintf('<img src="%s" width="%s" height="%s" title="%s" %s  />', $image['medium'][0], $image['medium'][1], $image['medium'][2], $image['title'], $extra);
+      $imgs[] = sprintf('<img src="%s" width="%s" height="%s" title="%s" %s  />', $image['thumbnail'][0], $image['thumbnail'][1], $image['thumbnail'][2], $image['title'], $extra);
   	}
   }
   if ($return_as == 'array') return $imgs;
@@ -68,48 +147,4 @@ function gi_library ($size = 'thumbnail', $extra = '', $print = false, $return_a
   }
 }
 
-
-function gi_fullsize($extra = '', $print = false) {
-  $image = gi_file ();
-  if ($url = gi_image($image,'fullsize')) {
-    $return = sprintf('<img src="%s" title="%s" %s  />', $url, $image->post_title, $extra);
-    if ($print) print $return;
-    else return $return;
-  }
-}
-function gi_medium($extra = '', $print = false) {
-  $image = gi_file ();
-  if ($url = gi_image($image,'medium')) {
-    $return = sprintf('<img src="%s" title="%s" %s  />', $url, $image->post_title, $extra);
-    if ($print) print $return;
-    else return $return;
-  }
-}
-function gi_thumbnail($extra = '', $print = false) {
-  $image = gi_file ();
-  if ($url = gi_image($image,'thumbnail')) {
-    $return = sprintf('<img src="%s" title="%s" %s  />', $url, $image->post_title, $extra);
-    if ($print) print $return;
-    else return $return;
-  }
-}
-
-function gi_image($image, $size) {
-  if (!$image) $image = gi_file();
-  if (!$image || array_key_exists($size, array ('fullsize', 'medium', 'thumbnail') ) ) return;
-
-  $meta = wp_get_attachment_metadata($image->ID);
-  $pathinfo = pathinfo($image->guid);
-
-  $urls = array ('title' => $image->post_title, 'fullsize' => $image->guid);
-
-  if (!$meta['sizes']['medium']) $urls['medium'] = $image->guid;
-  else $urls['medium'] = $pathinfo['dirname'] . '/' . $meta['sizes']['medium']['file'];
-
-  if (!$meta['sizes']['thumbnail']) $urls['thumbnail'] =  $urls['medium'];
-  else $urls['thumbnail'] = $pathinfo['dirname'] . '/' . $meta['sizes']['thumbnail']['file'];
-
-  if ($size == 'all') return $urls;
-  return $urls[$size];
-}
 ?>
