@@ -67,8 +67,9 @@ function gImage ($size) {
  *
  * @param bool $print Gostaria de imprimir a tag img?
  */
-function gi_fullsize($print = false) {
-  $return = gImage('fullsize');
+function gi_fullsize($print = false, $n=1) {
+  $images = gi_library('fullsize', '', false, 'array');
+  $return = isset($images[$n-1]) ? $images[$n-1] : '';
   if ($print) print $return;
   else return $return;
 }
@@ -77,8 +78,8 @@ function gi_fullsize($print = false) {
  *
  * @param bool $print Gostaria de imprimir a tag img?
  */
-function gi_full ($print = false) {
-  return gi_fullsize($print);
+function gi_full ($print = false, $n=1) {
+  return gi_fullsize($print, $n);
 }
 /**
  * Retorna a imagem em tamanho Medium
