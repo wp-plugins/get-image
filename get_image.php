@@ -17,11 +17,12 @@ function gi_file ($all = false){
   global $post;
   $images = array ();
 
-  if ($itens = get_posts(array('post_type' => 'attachment', 'post_parent' => $post->ID)) ) {
+  if ($itens = get_posts(array('post_type' => 'attachment', 'post_parent' => $post->ID, 'orderby' => 'menu_order')) ) {
     foreach ($itens as $item) {
       apply_filters('the_title', $attachment->post_title);
       $images[] = $item;
     }
+    $images = array_reverse($images);
   }
   return $all ? $images : reset($images);
 }
