@@ -122,6 +122,8 @@ function gi_thumb ($print = false, $n=1) {
  */
 
 function gi_library ($size = 'thumbnail', $extra = '', $print = false, $return_as = 'string') {
+  if ($size == 'full') $size = 'fullsize';
+  if ($size == 'thumb') $size = 'thumbnail';
   $images = gi_file(true);
   $imgs = array();
   foreach ($images as $image)
