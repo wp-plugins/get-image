@@ -2,9 +2,9 @@
 /*
     Plugin Name: getImage
     Description: Pega a última imagem filha de um post. Para usar este plugin basta você inserir um dos seguintes comandos no seu template: <strong>gi_fullsize(); gi_medium(); gi_thumbnail();</strong> Adicionando um parâmetro, ele vai parar dentro da tag de imagem gerada. Por padrão, o plugin retornará uma string contendo a tag da imagem gerada, mas você pode passar o segundo parametro como true para pedir que ele faça a impressão desta string."
-    Version: 0.8
+    Version: 0.9
     Author: DGmike
-    Author URI: http://dgmike.wordpress.com
+    Author URI: http://dgmike.com.br
  */
 
 /**
