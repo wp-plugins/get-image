@@ -86,8 +86,9 @@ function gi_full ($print = false, $n=1) {
  *
  * @param bool $print Gostaria de imprimir a tag img?
  */
-function gi_medium($print = false) {
-  $return = gImage('medium');
+function gi_medium($print = false, $n=1) {
+  $images = gi_library('madium', '', false, 'array');
+  $return = isset($images[$n-1]) ? $images[$n-1] : '';
   if ($print) print $return;
   else return $return;
 }
@@ -96,8 +97,9 @@ function gi_medium($print = false) {
  *
  * @param bool $print Gostaria de imprimir a tag img?
  */
-function gi_thumbnail($print = false) {
-  $return = gImage('thumbnail');
+function gi_thumbnail($print = false, $n=1) {
+  $images = gi_library('thumbnail', '', false, 'array');
+  $return = isset($images[$n-1]) ? $images[$n-1] : '';
   if ($print) print $return;
   else return $return;
 }
@@ -106,8 +108,8 @@ function gi_thumbnail($print = false) {
  *
  * @param bool $print Gostaria de imprimir a tag img?
  */
-function gi_thumb ($print = false) {
-  return gi_thumbnail($print);
+function gi_thumb ($print = false, $n=1) {
+  return gi_thumbnail($print, $n);
 }
 
 /**
