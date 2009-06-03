@@ -3,8 +3,8 @@ Contributors: dgmike
 Donate link: http://dgmike.com.br
 Tags: image, thumbnail, fullzise, get-image, images, galery
 Requires at least: 2.6
-Tested up to: 2.6
-Stable tag: 0.9
+Tested up to: 2.7.1
+Stable tag: 1.0
 
 Take the last image daughter of a post on the selected size.
 
@@ -58,6 +58,11 @@ galery order. The next code prints the third image in galery on format thumbnail
 
 The function `gi_library()` have shortcuts for thumb and full sizes. Now you can use
 `gi_library('thumb')` or `gi_library('full')` in your templates/scripts.
+
+== Upgrated in version 1.0 ==
+
+Now the function `gi_library()` on mode `brute_array` returns the `post_ID`, `title`, `caption` and `description`
+from the image.
 
 == Installation ==
 
